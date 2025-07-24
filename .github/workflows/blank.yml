@@ -1,0 +1,35 @@
+name: usual CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12.3
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12.3"
+    - name: Install dependencies
+      run: |
+        pip install poetry
+        poetry install --no-interaction --no-ansi --no-root
+    - name: Lint with flake8
+      run: |
+        poetry run flake8 .
+    - name: Lint with mypy
+      run: |
+        poetry run mypy .
+    - name: Lint with black
+      run: |
+        poetry run black --check --line-length 79 .
+    - name: Lint with isort
+      run: |
+        poetry run isort --check-only --profile=black .

@@ -22,13 +22,13 @@ jobs:
         pip install -r requirements.txt
     - name: Lint with flake8
       run: |
-        poetry run flake8 .
+        flake8 .
     - name: Lint with mypy
       run: |
-        poetry run mypy .
+        mypy .
     - name: Lint with black
       run: |
-        poetry run black --check --line-length 79 .
+        black --check --line-length 79 src/
     - name: Lint with isort
       run: |
-        poetry run isort --check-only --profile=black .
+        isort --check-only --profile=black src/

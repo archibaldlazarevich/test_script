@@ -9,17 +9,19 @@ from typing import TextIO
 import tabulate
 
 
-def check_files_not_empty(files: list[TextIO], parser: argparse.ArgumentParser):
+def check_files_not_empty(
+    files: list[TextIO], parser_data: argparse.ArgumentParser
+):
     """
     Метод для проверки  на то что передан пустой файл
     :param files: список файлов
-    :param parser: парсер команды для скрипта
+    :param parser_data: парсер команды для скрипта
     :return:
     """
     for f in files:
         f.seek(0, 2)
         if f.tell() == 0:
-            parser.error(f"Input file '{f.name}' is empty.")
+            parser_data.error(f"Input file '{f.name}' is empty.")
 
 
 def valid_date(date_str) -> date:
@@ -176,6 +178,6 @@ if __name__ == "__main__":
     start = time.time()
     parser = create_parser()
     args = parser.parse_args()
-    check_files_not_empty(files=args.file, parser=parser)
+    check_files_not_empty(files=args.file, parser_data=parser)
     args_processing(args=args)
     print("Времени потрачено:", time.time() - start)

@@ -198,5 +198,6 @@ def test_invalid_json_handling(caplog, tmp_path):
     with caplog.at_level(logging.WARNING):
         args_processing(args)
 
-    assert any("JSON reading error" in record.message for record in caplog.records)
-
+    assert any(
+        "JSON reading error" in record.message for record in caplog.records
+    )

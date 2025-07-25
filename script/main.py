@@ -1,17 +1,19 @@
 import argparse
 import json
+import logging
 import time
 from argparse import Namespace
 from datetime import date, datetime
+from typing import TextIO
 
 import tabulate
 
 
-def check_files_not_empty(files: list, parser: argparse.ArgumentParser):
+def check_files_not_empty(files: list[TextIO], parser: argparse.ArgumentParser):
     """
     Метод для проверки  на то что передан пустой файл
-    :param files:
-    :param parser:
+    :param files: список файлов
+    :param parser: парсер команды для скрипта
     :return:
     """
     for f in files:
@@ -36,10 +38,10 @@ def valid_date(date_str) -> date:
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(
+    parser_init = argparse.ArgumentParser(
         description="log_to_output", add_help=True
     )
-    parser.add_argument(
+    parser_init.add_argument(
         "-f",
         "--file",
         help="using before log file name",
@@ -48,16 +50,16 @@ def create_parser():
         type=argparse.FileType(mode="r", encoding="utf-8"),
     )
 
-    parser.add_argument(
+    parser_init.add_argument(
         "-r",
         "--report",
         help='type of report, you can use only "average"',
         required=True,
-        choices={"average"},
-        default="avearge",
+        choices=["average"],
+        default="average",
     )
 
-    parser.add_argument(
+    parser_init.add_argument(
         "-d",
         "--date",
         help="parameter for generating a report "
@@ -66,7 +68,7 @@ def create_parser():
         nargs=1,
         type=valid_date,
     )
-    return parser
+    return parser_init
 
 
 def create_answer_aver_dict(dict_data: dict) -> dict:
@@ -92,10 +94,10 @@ def create_answer_aver_dict(dict_data: dict) -> dict:
     return new_dict
 
 
-def create_report_with_date(date: str, file_list: list) -> dict | str:
+def create_report_with_date(date_data: date, file_list: list) -> dict | str:
     """
     Метод для обработки данных логов при наличии даты в команде к скрипту
-    :param date: дата по которой будет происходить анализ данных
+    :param date_data: дата по которой будет происходить анализ данных
     :param file_list: список файлов, которые требуется обработать
     :return: конечные данные для вывода в консоль
     | сообщение о том, что данных на запрашиваемую дату нет в файлах
@@ -109,14 +111,14 @@ def create_report_with_date(date: str, file_list: list) -> dict | str:
                     date_log = datetime.fromisoformat(
                         result.get("@timestamp")
                     ).date()
-                    if date_log == date:
+                    if date_log == date_data:
                         url = result.get("url")
                         if url in dict_init:
                             dict_init[url].append(result.get("response_time"))
                         else:
                             dict_init[url] = [result.get("response_time")]
                 except json.JSONDecodeError as e:
-                    print(f"JSON reading error in line: {e}")
+                    logging.warning(f"JSON reading error in line: {e}")
                     continue
     if dict_init:
         return create_answer_aver_dict(dict_data=dict_init)
@@ -142,7 +144,7 @@ def create_report_without_date(file_list: list) -> dict:
                     else:
                         dict_init[url] = [result.get("response_time")]
                 except json.JSONDecodeError as e:
-                    print(f"JSON reading error in line: {e}")
+                    logging.warning(f"JSON reading error in line: {e}")
                     continue
     return create_answer_aver_dict(dict_data=dict_init)
 
@@ -155,7 +157,7 @@ def args_processing(args: Namespace) -> None:
     """
     if args.date:
         answer = create_report_with_date(
-            date=args.date[0], file_list=args.file
+            date_data=args.date[0], file_list=args.file
         )
         date_info = (
             f"\nData for {datetime.strftime(args.date[0], '%Y-%m-%d')}."

@@ -1,3 +1,4 @@
+import logging
 from datetime import date
 
 import pytest
@@ -175,10 +176,10 @@ def test_check_no_such_file():
     assert e.value.code == 2
 
 
-def test_invalid_json_handling(capsys, tmp_path):
+def test_invalid_json_handling(caplog, tmp_path):
     """
     Проверка на некорректный json
-    :param capsys:
+    :param caplog:
     :param tmp_path:
     :return:
     """
@@ -194,6 +195,8 @@ def test_invalid_json_handling(capsys, tmp_path):
 
     parser = create_parser()
     args = parser.parse_args(["-f", str(log_file), "-r", "average"])
-    args_processing(args)
-    out = capsys.readouterr()
-    assert "JSON reading error in line" in out.out
+    with caplog.at_level(logging.WARNING):
+        args_processing(args)
+
+    assert any("JSON reading error" in record.message for record in caplog.records)
+

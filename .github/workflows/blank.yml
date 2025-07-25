@@ -29,10 +29,10 @@ jobs:
         mypy .
     - name: Lint with black
       run: |
-        black --check --line-length 79 src/
+        black --check --line-length 79 .
     - name: Lint with isort
       run: |
-        isort --check-only --profile=black src/
+        isort --check-only --profile=black .
     - name: Lint with pytest
       run: |
         pytest .

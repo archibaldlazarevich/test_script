@@ -1,7 +1,6 @@
 import argparse
 import json
 import logging
-import time
 from argparse import Namespace
 from datetime import date, datetime
 from typing import TextIO
@@ -125,7 +124,10 @@ def create_report_with_date(date_data: date, file_list: list) -> dict | str:
     if dict_init:
         return create_answer_aver_dict(dict_data=dict_init)
     else:
-        return f'No logs were found for the date "{date_data.strftime('%Y-%m-%d')}".'
+        return (
+            f"No logs were found for the date"
+            f' "{date_data.strftime('%Y-%m-%d')}".'
+        )
 
 
 def create_report_without_date(file_list: list) -> dict:

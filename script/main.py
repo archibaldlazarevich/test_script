@@ -125,7 +125,7 @@ def create_report_with_date(date_data: date, file_list: list) -> dict | str:
     if dict_init:
         return create_answer_aver_dict(dict_data=dict_init)
     else:
-        return f'No logs were found for the date "{date}".'
+        return f'No logs were found for the date "{date_data.strftime('%Y-%m-%d')}".'
 
 
 def create_report_without_date(file_list: list) -> dict:
@@ -175,9 +175,7 @@ def args_processing(args: Namespace) -> None:
 
 
 if __name__ == "__main__":
-    start = time.time()
     parser = create_parser()
     args = parser.parse_args()
     check_files_not_empty(files=args.file, parser_data=parser)
     args_processing(args=args)
-    print("Времени потрачено:", time.time() - start)

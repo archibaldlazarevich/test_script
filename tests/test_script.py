@@ -159,7 +159,7 @@ def test_check_an_empty_file(tmp_path):
     log_file.write_text(log_content, encoding="utf-8")
     with open(log_file, "r", encoding="utf-8") as f:
         with pytest.raises(SystemExit) as e:
-            check_files_not_empty([f], parser=parser)
+            check_files_not_empty([f], parser_data=parser)
     assert e.type == SystemExit
     assert e.value.code == 2
 
